@@ -21,11 +21,17 @@ jobs:
       with:
         node-version: '16'
 
-    - name: Instalar dependências
-      run: npm install
+    - name: Install dependencies
+        run: |
+          cd GlovieByJoe
+          npm install
 
     - name: Executar testes
-      run: npm test
+      run: |
+          cd GlovieByJoe
+          npm test
 
     - name: Construir aplicação
-      run: npm run build
+      run: |
+          cd GlovieByJoe
+          npm run build
