@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, Image, ScrollView, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getPopularMovies, getMovieDetails } from '../services/movieApi';
+import styles from '../styles/movieDetaisScreen.styles';
 
 const MovieDetailsScreen = ({ route }) => {
   const { movieId: initialMovieId } = route.params;
@@ -24,7 +25,7 @@ const MovieDetailsScreen = ({ route }) => {
         data={adjustedMovies}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
-          <TouchableOpacity style={{ flex: 1 }} onPress={() => selectNewMovie(item.id)}>
+          <TouchableOpacity style={styles.flex} onPress={() => selectNewMovie(item.id)}>
             <View style={styles.movieCard}>
               {item.placeholder ? null : (
                 <Image
@@ -45,18 +46,18 @@ const MovieDetailsScreen = ({ route }) => {
 
   const renderDetalhes = (movie) => (
     <View style={styles.content}>
-      <Text style={{ color: "#fff", fontWeight: "bold", fontFamily: "roboto light" }}>Ficha técnica</Text>
+      <Text style={styles.titleDetails}>Ficha técnica</Text>
 
-      <Text style={{ color: "#908b8b", fontFamily: "roboto light", marginTop: 14 }}>
+      <Text style={styles.descriptionDetailsF}>
         <b>Titulo Original:</b> &nbsp;{movie.original_title}
       </Text>
-      <Text style={{ color: "#908b8b", fontFamily: "roboto light", marginTop: 4 }}>
+      <Text style={styles.descriptionDetails}>
         <b>Gênero:</b> &nbsp;{movie.genres.map(genre => genre.name).join(', ')}
       </Text>
-      <Text style={{ color: "#908b8b", fontFamily: "roboto light", marginTop: 4 }}>
+      <Text style={styles.descriptionDetails}>
         <b>Data de lançamento:</b> &nbsp;{movie.release_date}
       </Text>
-      <Text style={{ color: "#908b8b", fontFamily: "roboto light", marginTop: 4 }}>
+      <Text style={styles.descriptionDetails}>
         <b>País:</b> &nbsp;{movie.origin_country}
       </Text>
     </View>
@@ -134,7 +135,7 @@ const MovieDetailsScreen = ({ route }) => {
   }
 
   return (
-    <ScrollView style={{ background: "#1f1f1f" }} ref={scrollRef}>
+    <ScrollView style={styles.mainScroll} ref={scrollRef}>
       <View style={styles.container}>
         <Image
           source={{ uri: `https://image.tmdb.org/t/p/w500${movie.poster_path}` }}
@@ -149,9 +150,9 @@ const MovieDetailsScreen = ({ route }) => {
           />
         </View>
       </View>
-      <View style={{ background: "#000", background: "linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(253,187,45,0) 100%)", marginTop: -200, width: "100%", height: 200 }} />
-      <View style={{ background: "#000", height: 100 }} />
-      <View style={{ marginTop: -170, paddingLeft: 20, paddingRight: 20 }}>
+      <View style={[styles.movieBannerGradient, {background: "linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(253,187,45,0) 100%)"}]} />
+      <View style={styles.movieBannerBg} />
+      <View style={styles.movieBannerView}>
         <Text style={styles.title}>{movie.title}</Text>
         <Text style={styles.genres}>{movie.genres[0].name}</Text>
         <Text style={styles.overview}>{movie.overview}</Text>
@@ -161,12 +162,7 @@ const MovieDetailsScreen = ({ route }) => {
         <TouchableOpacity style={styles.button}>
           <Image
             source={require('../../assets/icons/play/baseline-play_arrow-24px.svg')}
-            style={{
-              width: 25,
-              height: 25,
-              tintColor: "#333",
-              marginLeft: 10
-            }}
+            style={styles.iconPlay}
           />
           <Text style={styles.buttonText}>Assista</Text>
         </TouchableOpacity>
@@ -174,11 +170,7 @@ const MovieDetailsScreen = ({ route }) => {
         <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={toggleFavorite}>
           <Image
             source={isFavorited ? require('../../assets/icons/check/baseline-check-24px.svg') : require('../../assets/icons/star/baseline-star_rate-18px.svg')}
-            style={{
-              width: 25,
-              height: 25,
-              tintColor: "#cccccc"
-            }}
+            style={styles.iconFavorite}
           />
           <Text style={styles.buttonTextOutline}>{isFavorited ? 'Adicionado' : 'Minha lista'}</Text>
         </TouchableOpacity>
@@ -207,143 +199,6 @@ const MovieDetailsScreen = ({ route }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-    width: '100%',
-    height: 300,
-  },
-  blurredImage: {
-    width: '100%',
-    height: '100%',
-  },
-  title: {
-    textAlign: "center",
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-    fontFamily: "roboto light"
-  },
-  genres: {
-    textAlign: "center",
-    color: "#908b8b",
-    fontSize: 12,
-    fontFamily: "roboto light",
-    marginTop: 10,
-  },
-  overview: {
-    color: "#908b8b",
-    fontSize: 13,
-    fontFamily: "roboto light",
-    marginTop: 10
-  },
-  centeredImageContainer: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: [
-      { translateX: -50 },
-      { translateY: -90 },
-    ],
-  },
-  centeredImage: {
-    width: 100,
-    height: 150,
-  },
-  // botões inferiores
-  containerButton: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 20,
-    backgroundColor: "#000",
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 3,
-    width: "49%"
-  },
-  buttonOutline: {
-    backgroundColor: 'transparent',
-    borderWidth: .5,
-    borderColor: '#cccccc',
-  },
-  buttonText: {
-    color: '#333',
-    marginLeft: 10,
-    fontSize: 16,
-    fontWeight: "bold",
-    fontFamily: "roboto light"
-  },
-  buttonTextOutline: {
-    color: '#cccccc',
-    marginLeft: 10,
-    fontSize: 16,
-    fontWeight: "bold",
-    fontFamily: "roboto light"
-  },
-  icon: {
-    marginRight: 10,
-  },
-  // tabs
-  containerTab: {
-    flex: 2,
-    paddingTop: 10,
-    paddingLeft: 10,
-    paddingRight: 10,
-    backgroundColor: "#000"
-  },
-  tabs: {
-    flexDirection: 'row',
-    marginBottom: 0,
-  },
-  tabButton: {
-    flex: 1,
-    paddingLeft: 10,
-    paddingRight: 10,
-    alignItems: 'left',
-    borderBottomWidth: 2,
-    borderBottomColor: 'transparent',
-  },
-  activeTab: {
-    borderBottomWidth: 2,
-    borderBottomColor: '#fff',
-    color: "#fff"
-  },
-  tabText: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#908b8b',
-    fontFamily: "roboto thin",
-    paddingBottom: 16,
-  },
-  content: {
-    padding: 20,
-    borderRadius: 5,
-  },
-  // movies
-  containerAssista: {
-    padding: 10,
-  },
-  listContent: {
-    paddingBottom: 20,
-  },
-  columnWrapper: {
-    justifyContent: 'space-between',
-  },
-  movieCard: {
-    marginBottom: 15,
-    width: '94%',
-    marginLeft: "3%"
-  },
-  image: {
-    width: '100%',
-    height: 150,
-  },
-});
+
 
 export default MovieDetailsScreen;
