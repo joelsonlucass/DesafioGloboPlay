@@ -1,8 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, Image, ScrollView, FlatList, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, ScrollView, FlatList, ActivityIndicator, TouchableOpacity, Modal } from 'react-native';
+import { WebView } from 'react-native-webview';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getPopularMovies, getMovieDetails } from '../services/movieApi';
+import { getPopularMovies, getMovieDetails, getTrailerKeyByMovieId } from '../services/movieApi';
 import styles from '../styles/movieDetaisScreen.styles';
+import PlayVideoModal from '../components/PlayVideoModal';
 
 const MovieDetailsScreen = ({ route }) => {
   const { movieId: initialMovieId } = route.params;
@@ -10,8 +12,11 @@ const MovieDetailsScreen = ({ route }) => {
   const [movie, setMovie] = useState(null);
   const [movies, setMovies] = useState([]);
   const [isFavorited, setIsFavorited] = useState(false);
+  const [keyTrailer, setKeyTrailer] = useState(null);
   const [activeTab, setActiveTab] = useState('assista');
   const scrollRef = useRef(null);
+  const [isTrailerVisible, setIsTrailerVisible] = useState(false);
+  const [trailerUrl, setTrailerUrl] = useState(false);
 
   const selectNewMovie = (id) => {
     setMovieId(id)
@@ -108,8 +113,10 @@ const MovieDetailsScreen = ({ route }) => {
       try {
         const movieData = await getMovieDetails(movieId);
         setMovie(movieData);
-        console.log(movieData)
         checkIfFavorited();
+        const keyTrailer = await getTrailerKeyByMovieId(movieId);
+        setKeyTrailer(keyTrailer);
+        setTrailerUrl(`https://www.youtube.com/embed/${keyTrailer}?autoplay=1`)
       } catch (error) {
         console.error('Erro ao carregar detalhes do filme:', error);
       }
@@ -119,7 +126,7 @@ const MovieDetailsScreen = ({ route }) => {
 
     const fetchMoviesAndGenres = async () => {
       try {
-        // Carregar filmes e gêneros
+        // carregar filmes e gêneros
         const movieList = await getPopularMovies();
         setMovies(movieList);
       } catch (error) {
@@ -131,8 +138,16 @@ const MovieDetailsScreen = ({ route }) => {
   }, [movieId]);
 
   if (!movie) {
-    return <Text>Carregando...</Text>;
+    return (
+      <View style={styles.loaderContainer}>
+        <ActivityIndicator size="large" color="#fff" />
+      </View>
+    );
   }
+
+  const openTrailer = () => {
+    setIsTrailerVisible(true);
+  };
 
   return (
     <ScrollView style={styles.mainScroll} ref={scrollRef}>
@@ -159,7 +174,7 @@ const MovieDetailsScreen = ({ route }) => {
       </View>
 
       <View style={styles.containerButton}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={[styles.button, !keyTrailer && styles.disabledButton]} disabled={!keyTrailer} onPress={openTrailer}>
           <Image
             source={require('../../assets/icons/play/baseline-play_arrow-24px.svg')}
             style={styles.iconPlay}
@@ -195,10 +210,14 @@ const MovieDetailsScreen = ({ route }) => {
       </View>
       {activeTab === 'assista' && renderAssista()}
       {activeTab === 'detalhes' && renderDetalhes(movie)}
+
+      <PlayVideoModal
+      visible={isTrailerVisible}
+      onClose={() => setIsTrailerVisible(false)}
+      trailerUrl={trailerUrl}
+    />
     </ScrollView>
   );
 };
-
-
 
 export default MovieDetailsScreen;
