@@ -67,3 +67,27 @@ export const searchMoviesByName = async (query, page) => {
         return [];
     }
 };
+
+export const getTrailerKeyByMovieId = async (movieId) => {
+    try {
+        const response = await fetch(`${BASE_URL}/movie/${movieId}/videos?api_key=${API_KEY}&language=pt-BR`);
+        const data = await response.json();
+
+        if (!data.results || !data.results.length) {
+            return null;
+        }
+
+        const trailer = data.results.find(
+            (video) => video.site === 'YouTube' && video.type === 'Trailer'
+        );
+
+        if (trailer) {
+            return trailer.key;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        console.error('Erro ao buscar trailer do filme:', error);
+        return null;
+    }
+};

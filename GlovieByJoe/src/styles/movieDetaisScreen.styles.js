@@ -183,6 +183,36 @@ const styles = StyleSheet.create({
     width: 25,
     height: 25,
     tintColor: "#cccccc"
+  },
+  loaderContainer: {
+    flex: 1,    
+    backgroundColor: '#000', 
+    justifyContent: 'center', 
+    alignItems: 'center',  
+  },
+
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+  },
+  closeButton: {
+    padding: 10,
+    backgroundColor: '#333',
+    alignSelf: 'flex-end',
+    marginRight: 10,
+    marginTop: 30,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: '#fff',
+    fontSize: 16,
+  },
+  webview: {
+    flex: 1,
+    marginTop: 10,
+  },
+  disabledButton: {
+    opacity: 0.3
   }
 });
 
