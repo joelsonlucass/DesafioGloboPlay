@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView, TextInput } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView, TextInput, Button } from 'react-native';
 import { getPopularMovies, getGenres, searchMoviesByName } from '../services/movieApi';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Appbar } from 'react-native-paper';
+import styles from '../styles/homeScreen.styles';
 
 const HomeScreen = ({ navigation }) => {
     const [moviesSearched, setMoviesSearched] = useState([]);
@@ -10,6 +11,7 @@ const HomeScreen = ({ navigation }) => {
     const [genres, setGenres] = useState([]);
     const [groupedMovies, setGroupedMovies] = useState({});
     const [searchQuery, setSearchQuery] = useState('');
+    const scrollRef = useRef(null);
 
     useEffect(() => {
         const fetchMoviesAndGenres = async () => {
@@ -54,7 +56,7 @@ const HomeScreen = ({ navigation }) => {
 
     // função para renderizar cada gênero
     const renderGenre = (genre, moviesInGenre) => (
-        <View style={{ marginBottom: 30 }} key={genre}>
+        <View style={styles.mb30} key={genre}>
             <Text style={styles.styleTitle}>{genre}</Text>
             <FlatList
                 data={moviesInGenre}
@@ -79,16 +81,29 @@ const HomeScreen = ({ navigation }) => {
     const handleSearchMovie = async (event) => {
         setSearchQuery(event)
         const list = await searchMoviesByName(event);
-        console.log(moviesSearched)
         setMoviesSearched(list)
     }
 
+    const goToNextPage = async (page) => {
+        const nextPage = page + 1;
+        const list = await searchMoviesByName(searchQuery, nextPage);
+        setMoviesSearched(list)
+        scrollRef.current?.scrollTo({ offset: 0, animated: true });
+    }
+
+    const goToPreviousPage = async (page) => {
+        const previousPage = page - 1;
+        const list = await searchMoviesByName(searchQuery, previousPage);
+        setMoviesSearched(list)
+        scrollRef.current?.scrollTo({ offset: 0, animated: true });
+    }
+
     return (
-        <View style={{ backgroundColor: '#1f1f1f', flex: 1 }}>
-            <Appbar.Header style={{ backgroundColor: '#000' }}>
+        <View style={styles.mainView}>
+            <Appbar.Header style={styles.appBarHeader}>
                 <Appbar.Content
                     title="glovie"
-                    titleStyle={{ color: '#e6e6e6', fontSize: 24, fontWeight: 'bold', textAlign: "center", fontFamily: "roboto light", letterSpacing: 4 }}
+                    titleStyle={styles.appBarContent}
                 />
             </Appbar.Header>
 
@@ -108,16 +123,17 @@ const HomeScreen = ({ navigation }) => {
                 ) : null}
             </View>
 
-            {searchQuery.length > 0 ? (
-                <ScrollView>
+            <ScrollView ref={scrollRef}>
+                {searchQuery.length > 0 ? (
+
                     <View style={styles.containerAssista}>
-                        <Text style={styles.styleTitle}>{moviesSearched.length} resultados encontrados</Text>
+                        <Text style={styles.styleTitle}>{moviesSearched.total_results} resultados encontrados</Text>
                         <FlatList
-                            data={moviesSearched}
-                            extraData={moviesSearched}
+                            data={moviesSearched.results}
+                            extraData={moviesSearched.results}
                             keyExtractor={(item) => item.id.toString()}
                             renderItem={({ item }) => (
-                                <TouchableOpacity style={{ flex: 1 }} onPress={() => navigation.navigate('MovieDetailsScreen', { movieId: item.id })}>
+                                <TouchableOpacity style={styles.flex} onPress={() => navigation.navigate('MovieDetailsScreen', { movieId: item.id })}>
                                     <View style={styles.movieCard}>
                                         {item.placeholder ? null : (
                                             <Image
@@ -133,76 +149,34 @@ const HomeScreen = ({ navigation }) => {
                             contentContainerStyle={styles.listContent}
                             showsVerticalScrollIndicator={false}
                         />
+                        <View style={styles.paginationContainer}>
+                            <Text style={styles.stylePagination}>
+                                Página {moviesSearched.page} de {moviesSearched.total_pages}
+                            </Text>
+                            <View style={styles.paginationButtons}>
+                                {moviesSearched.page > 1 && (
+                                    <TouchableOpacity onPress={() => goToPreviousPage(moviesSearched.page)} style={styles.button}>
+                                        <Text style={styles.buttonText}>Anterior</Text>
+                                    </TouchableOpacity>
+                                )}
+                                {moviesSearched.page < moviesSearched.total_pages && (
+                                    <TouchableOpacity onPress={() => goToNextPage(moviesSearched.page)} style={styles.button}>
+                                        <Text style={styles.buttonText}>Próxima</Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
+                        </View>
                     </View>
-                </ScrollView>
-            ) : (
-                <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 20 }}>
-                    {Object.keys(groupedMovies).map((genre) => renderGenre(genre, groupedMovies[genre]))}
-                </ScrollView>
-            )}
+
+                ) : (
+                    <ScrollView style={styles.flex} contentContainerStyle={styles.padding20}>
+                        {Object.keys(groupedMovies).map((genre) => renderGenre(genre, groupedMovies[genre]))}
+                    </ScrollView>
+                )}
+            </ScrollView>
 
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderWidth: 1,
-        borderColor: 'rgba(0,0,0,0)',
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        height: 40,
-        backgroundColor: '#333',
-        margin: 20,
-    },
-    searchInput: {
-        flex: 1,
-        fontSize: 16,
-        color: '#fff',
-        marginHorizontal: 10,
-    },
-    iconLeft: {
-        marginRight: 5,
-    },
-    iconRight: {
-        marginLeft: 5,
-    },
-
-    styleTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#fff',
-        marginBottom: 10,
-        fontFamily: "roboto light"
-    },
-    movieItem: {
-        marginRight: 10,
-        alignItems: 'center',
-    },
-    movieImage: {
-        width: 120,
-        height: 170,
-    },
-    containerAssista: {
-        padding: 10,
-    },
-    listContent: {
-        paddingBottom: 20,
-    },
-    columnWrapper: {
-        justifyContent: 'space-between',
-    },
-    movieCard: {
-        marginBottom: 15,
-        width: '94%',
-        marginLeft: "3%"
-    },
-    image: {
-        width: '100%',
-        height: 150,
-    },
-});
 
 export default HomeScreen;

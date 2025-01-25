@@ -3,6 +3,7 @@ import { View, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-nativ
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Appbar } from 'react-native-paper';
 import { useFocusEffect } from '@react-navigation/native';
+import styles from '../styles/favoriteMoviesScreen.styles';
 
 const FavoriteMoviesScreen = ({ navigation }) => {
     const [favorites, setFavorites] = useState([]);
@@ -29,11 +30,11 @@ const FavoriteMoviesScreen = ({ navigation }) => {
     }
 
     return (
-        <View style={{ flex: 1, backgroundColor: '#1f1f1f' }}>
-            <Appbar.Header style={{ backgroundColor: '#000', alignItems: 'center' }}>
+        <View style={styles.mainView}>
+            <Appbar.Header style={styles.appBarHeader}>
                 <Appbar.Content
                     title="Minha Lista"
-                    titleStyle={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}
+                    titleStyle={styles.appBarContent}
                 />
             </Appbar.Header>
 
@@ -43,7 +44,7 @@ const FavoriteMoviesScreen = ({ navigation }) => {
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) => (
                         <TouchableOpacity
-                            style={{ flex: 1 }}
+                            style={styles.flex}
                             onPress={() => navigation.navigate('MovieFavoriteDetailsScreen', { movieId: item.id })}
                         >
                             <View style={styles.movieCard}>
@@ -65,27 +66,5 @@ const FavoriteMoviesScreen = ({ navigation }) => {
         </View>
     );
 };
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 10,
-    },
-    listContent: {
-        paddingBottom: 10,
-    },
-    columnWrapper: {
-        justifyContent: 'space-between',
-    },
-    movieCard: {
-        marginBottom: 15,
-        width: '94%',
-        marginLeft: "3%",
-    },
-    image: {
-        width: '100%',
-        height: 150,
-    },
-});
 
 export default FavoriteMoviesScreen;

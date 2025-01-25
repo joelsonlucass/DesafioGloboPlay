@@ -52,13 +52,13 @@ export const getGenres = async () => {
 };
 
 // função para pesquisar os filmes pelo nome
-export const searchMoviesByName = async (query) => {
+export const searchMoviesByName = async (query, page) => {
     try {
-        const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=pt-BR`);
+        const response = await fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&language=pt-BR${page ? `&page=${page}` : ""}`);
         const data = await response.json();
 
         if (data.results) {
-            return data.results;
+            return data;
         } else {
             return [];
         }
