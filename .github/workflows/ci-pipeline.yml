@@ -13,25 +13,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout código
-      uses: actions/checkout@v3
+      - name: Checkout código
+        uses: actions/checkout@v3
 
-    - name: Configurar Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '16'
+      - name: Configurar Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
-    - name: Install dependencies
+      - name: Install dependencies
         run: |
           cd GlovieByJoe
           npm install
 
-    - name: Executar testes
-      run: |
+      - name: Executar testes
+        run: |
           cd GlovieByJoe
           npm test
 
-    - name: Construir aplicação
-      run: |
+      - name: Construir aplicação
+        run: |
           cd GlovieByJoe
           npm run build
