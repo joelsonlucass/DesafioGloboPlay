@@ -25,23 +25,17 @@ Aplicativo criado para o desafio proposto pela Globo.
 
 ## Screenshots
 
-![Tela inicial](GlovieByJoe/assets/screenshots/Home.jpg)
+| Home                                                   | Detalhes                                                | Favoritado                                                 | Buscar                                                 |
+|--------------------------------------------------------|---------------------------------------------------------|------------------------------------------------------------|--------------------------------------------------------|
+| <img src="GlovieByJoe/assets/screenshots/Home.jpg" width="200" />       | <img src="GlovieByJoe/assets/screenshots/Details.jpg" width="200" />        | <img src="GlovieByJoe/assets/screenshots/Favorited.jpg" width="200" />         | <img src="GlovieByJoe/assets/screenshots/Searched.jpg" width="200" />       
 
-![Detalhes do filme](GlovieByJoe/assets/screenshots/Details.jpg)
+| Assista também                                         | Mais detalhes                                          | Minha lista                                               | Filtrar                                                  |
+|--------------------------------------------------------|--------------------------------------------------------|-----------------------------------------------------------|----------------------------------------------------------|
+| <img src="GlovieByJoe/assets/screenshots/WatchToo.jpg" width="200" />   | <img src="GlovieByJoe/assets/screenshots/MoreDetails.jpg" width="200" />    | <img src="GlovieByJoe/assets/screenshots/MyList.jpg" width="200" />            | <img src="GlovieByJoe/assets/screenshots/Filtered.jpg" width="200" />   |
 
-![Filme favoritado](GlovieByJoe/assets/screenshots/Favorited.jpg)
-
-![Assista também](GlovieByJoe/assets/screenshots/WatchToo.jpg)
-
-![Mais detalhes](GlovieByJoe/assets/screenshots/MoreDetails.jpg)
-
-![Minha lista](GlovieByJoe/assets/screenshots/MyList.jpg)
-
-![Filtrar](GlovieByJoe/assets/screenshots/Filtered.jpg)
-
-![Buscar](GlovieByJoe/assets/screenshots/Searched.jpg)
-
-![Paginação](GlovieByJoe/assets/screenshots/Pagination.jpg)
+| Paginação                                                 |
+|--------------------------------------------------------|
+| <img src="GlovieByJoe/assets/screenshots/Pagination.jpg" width="200" />        |
 
 ## Como baixar
 - Baixar ou clonar o repositório 
