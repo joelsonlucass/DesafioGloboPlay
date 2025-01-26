@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getPopularMovies, getMovieDetails, getTrailerKeyByMovieId } from '../services/movieApi';
 import styles from '../styles/movieDetaisScreen.styles';
 import PlayVideoModal from '../components/PlayVideoModal';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const MovieDetailsScreen = ({ route }) => {
   const { movieId: initialMovieId } = route.params;
@@ -25,27 +26,22 @@ const MovieDetailsScreen = ({ route }) => {
 
   // funções para renderizar o conteúdo de cada aba
   const renderAssista = () => (
-    <View style={styles.containerAssista}>
-      <FlatList
-        data={adjustedMovies}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity style={styles.flex} onPress={() => selectNewMovie(item.id)}>
+    <View style={styles.mainView}>
+      {adjustedMovies.map((item) => {
+        if (item.placeholder) {
+          return null;
+        }
+        return (
+          <TouchableOpacity key={item.id} style={styles.viewWatchToo} onPress={() => selectNewMovie(item.id)}>
             <View style={styles.movieCard}>
-              {item.placeholder ? null : (
-                <Image
-                  source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
-                  style={styles.image}
-                />
-              )}
+              <Image
+                source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
+                style={styles.image}
+              />
             </View>
           </TouchableOpacity>
-        )}
-        numColumns={3}
-        columnWrapperStyle={styles.columnWrapper}
-        contentContainerStyle={styles.listContent}
-        showsVerticalScrollIndicator={false}
-      />
+        );
+      })}
     </View>
   );
 
@@ -54,16 +50,16 @@ const MovieDetailsScreen = ({ route }) => {
       <Text style={styles.titleDetails}>Ficha técnica</Text>
 
       <Text style={styles.descriptionDetailsF}>
-        <b>Titulo Original:</b> &nbsp;{movie.original_title}
+        <Text style={styles.bold}>Titulo Original:</Text> &nbsp;{movie.original_title}
       </Text>
       <Text style={styles.descriptionDetails}>
-        <b>Gênero:</b> &nbsp;{movie.genres.map(genre => genre.name).join(', ')}
+        <Text style={styles.bold}>Gênero:</Text> &nbsp;{movie.genres.map(genre => genre.name).join(', ')}
       </Text>
       <Text style={styles.descriptionDetails}>
-        <b>Data de lançamento:</b> &nbsp;{movie.release_date}
+        <Text style={styles.bold}>Data de lançamento:</Text> &nbsp;{movie.release_date}
       </Text>
       <Text style={styles.descriptionDetails}>
-        <b>País:</b> &nbsp;{movie.origin_country}
+        <Text style={styles.bold}>País:</Text> &nbsp;{movie.origin_country}
       </Text>
     </View>
   );
@@ -165,7 +161,14 @@ const MovieDetailsScreen = ({ route }) => {
           />
         </View>
       </View>
-      <View style={[styles.movieBannerGradient, {background: "linear-gradient(0deg, rgba(0,0,0,1) 0%, rgba(253,187,45,0) 100%)"}]} />
+      <LinearGradient
+      colors={['rgba(0,0,0,1)', 'rgba(253,187,45,0)']}
+      start={{ x: 0.5, y: 1 }}
+      end={{ x: 0.5, y: 0 }}
+      style={styles.movieBannerGradient}
+    >
+      {/* Seu conteúdo aqui */}
+    </LinearGradient>
       <View style={styles.movieBannerBg} />
       <View style={styles.movieBannerView}>
         <Text style={styles.title}>{movie.title}</Text>
@@ -176,7 +179,7 @@ const MovieDetailsScreen = ({ route }) => {
       <View style={styles.containerButton}>
         <TouchableOpacity style={[styles.button, !keyTrailer && styles.disabledButton]} disabled={!keyTrailer} onPress={openTrailer}>
           <Image
-            source={require('../../assets/icons/play/baseline-play_arrow-24px.svg')}
+            source={require('../../assets/icons/play/drawable-xxxhdpi/baseline_play_arrow_black_48.png')}
             style={styles.iconPlay}
           />
           <Text style={styles.buttonText}>Assista</Text>
@@ -184,7 +187,7 @@ const MovieDetailsScreen = ({ route }) => {
 
         <TouchableOpacity style={[styles.button, styles.buttonOutline]} onPress={toggleFavorite}>
           <Image
-            source={isFavorited ? require('../../assets/icons/check/baseline-check-24px.svg') : require('../../assets/icons/star/baseline-star_rate-18px.svg')}
+            source={isFavorited ? require('../../assets/icons/check/drawable-xxxhdpi/baseline_check_black_48.png') : require('../../assets/icons/star/drawable-xxxhdpi/baseline_star_rate_black_48.png')}
             style={styles.iconFavorite}
           />
           <Text style={styles.buttonTextOutline}>{isFavorited ? 'Adicionado' : 'Minha lista'}</Text>
@@ -198,13 +201,13 @@ const MovieDetailsScreen = ({ route }) => {
             style={styles.tabButton}
             onPress={() => setActiveTab('assista')}
           >
-            <Text style={[styles.tabText, activeTab === 'assista' && styles.activeTab, { width: 114 }]}>ASSISTA TAMBÉM</Text>
+            <Text style={[styles.tabText, styles.tabTextWatch, activeTab === 'assista' && styles.activeTab, ]}>ASSISTA TAMBÉM</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.tabButton}
             onPress={() => setActiveTab('detalhes')}
           >
-            <Text style={[styles.tabText, activeTab === 'detalhes' && styles.activeTab, { width: 68 }]}>DETALHES</Text>
+            <Text style={[styles.tabText, styles.tabTextDetails, activeTab === 'detalhes' && styles.activeTab,]}>DETALHES</Text>
           </TouchableOpacity>
         </View>
       </View>

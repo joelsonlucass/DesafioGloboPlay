@@ -1,10 +1,14 @@
 import { StyleSheet } from 'react-native';
+import { Platform } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
     width: '100%',
     height: 300,
+  },
+  bold: {
+    fontWeight: "bold"
   },
   blurredImage: {
     width: '100%',
@@ -114,6 +118,22 @@ const styles = StyleSheet.create({
     fontFamily: "roboto thin",
     paddingBottom: 16,
   },
+  tabTextWatch: Platform.select({
+    web: {
+      width: 114,
+    },
+    default: {
+      width: 124,
+    }
+  }),
+  tabTextDetails: Platform.select({
+    web: {
+      width: 68,
+    },
+    default: {
+      width: 72,
+    }
+  }),
   content: {
     padding: 20,
     borderRadius: 5,
@@ -158,18 +178,27 @@ const styles = StyleSheet.create({
   mainScroll: {
     backgroundColor: "#1f1f1f"
   },
+  mainView: { 
+    flexDirection: 'row', 
+    flexWrap: 'wrap', 
+    padding: 14 
+  },
+  viewWatchToo: {
+    width: '33.3333%',
+    padding: 2,
+  },
   movieBannerGradient: {
-    backgroundColor: "#000",
+    // backgroundColor: "#000",
     marginTop: -200,
     width: "100%",
     height: 200
   },
   movieBannerBg: {
     backgroundColor: "#000",
-    height: 100
+    height: 200
   },
   movieBannerView: {
-    marginTop: -170,
+    marginTop: -270,
     paddingLeft: 20,
     paddingRight: 20
   },
