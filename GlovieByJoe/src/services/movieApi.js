@@ -91,3 +91,36 @@ export const getTrailerKeyByMovieId = async (movieId) => {
         return null;
     }
 };
+
+export async function discoverMovies({ selectedGenre, selectedYear, selectedVote, selectedContentType }, page) {
+    try {
+
+        let url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&language=pt-BR`;
+
+        if (selectedGenre) {
+            url += `&with_genres=${selectedGenre}`;
+        }
+
+        if (selectedYear) {
+            url += `&primary_release_year=${selectedYear}`;
+        }
+
+        if (selectedVote) {
+            url += `&vote_average.gte=${selectedVote}`;
+        }
+
+        if (selectedContentType == "true") {
+            url += `&include_adult=true`;
+        } else {
+            url += `&include_adult=false`;
+        }
+
+        const response = await fetch(`${url}${page ? `&page=${page}` : ""}`);
+        const data = await response.json();
+
+        return data || [];
+    } catch (error) {
+        console.error('Erro ao descobrir filmes:', error);
+        return [];
+    }
+}

@@ -1,3 +1,4 @@
+import 'core-js/features/set-immediate';
 import { registerRootComponent } from 'expo';
 
 import App from './App';

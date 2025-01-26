@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView, TextInput, Button } from 'react-native';
-import { getPopularMovies, getGenres, searchMoviesByName } from '../services/movieApi';
+import { View, Text, FlatList, TouchableOpacity, Image, ScrollView, TextInput } from 'react-native';
+import { getPopularMovies, getGenres, searchMoviesByName, discoverMovies } from '../services/movieApi';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Appbar } from 'react-native-paper';
 import styles from '../styles/homeScreen.styles';
+import FilterSelect from '../components/FilterSelect';
+import { yearFilterList, contentFilterList, voteFilterList } from '../utils/FilterUtils';
 
 const HomeScreen = ({ navigation }) => {
     const [moviesSearched, setMoviesSearched] = useState([]);
@@ -11,6 +13,11 @@ const HomeScreen = ({ navigation }) => {
     const [genres, setGenres] = useState([]);
     const [groupedMovies, setGroupedMovies] = useState({});
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedGenre, setSelectedGenre] = useState('');
+    const [selectedContentType, setSelectedContentType] = useState('');
+    const [selectedYear, setSelectedYear] = useState('');
+    const [selectedVote, setSelectedVote] = useState('');
+
     const scrollRef = useRef(null);
 
     useEffect(() => {
@@ -22,6 +29,7 @@ const HomeScreen = ({ navigation }) => {
 
                 setMovies(movieList);
                 setGenres(genreList);
+                console.log(genreList)
 
                 // agrupa os filmes por gênero
                 groupMoviesByGenre(movieList, genreList);
@@ -32,6 +40,20 @@ const HomeScreen = ({ navigation }) => {
 
         fetchMoviesAndGenres();
     }, []);
+
+    useEffect(() => {
+        async function loadMovies() {
+            if (selectedGenre || selectedYear || selectedVote || selectedContentType) {
+                const results = await discoverMovies({ selectedGenre, selectedYear, selectedVote, selectedContentType });
+                setMoviesSearched(results)
+                console.log(results);
+            } else {
+                fetchMoviesAndGenres();
+            }
+        }
+
+        loadMovies();
+    }, [selectedGenre, selectedYear, selectedVote, selectedContentType]);
 
     // função para agrupar os filmes por gênero
     const groupMoviesByGenre = (movies, genres) => {
@@ -86,15 +108,25 @@ const HomeScreen = ({ navigation }) => {
 
     const goToNextPage = async (page) => {
         const nextPage = page + 1;
-        const list = await searchMoviesByName(searchQuery, nextPage);
-        setMoviesSearched(list)
+        if (!searchQuery) {
+            const results = await discoverMovies({ selectedGenre, selectedYear, selectedVote, selectedContentType }, nextPage);
+            setMoviesSearched(results)
+        } else {
+            const list = await searchMoviesByName(searchQuery, nextPage);
+            setMoviesSearched(list)
+        }
         scrollRef.current?.scrollTo({ offset: 0, animated: true });
     }
 
     const goToPreviousPage = async (page) => {
         const previousPage = page - 1;
-        const list = await searchMoviesByName(searchQuery, previousPage);
-        setMoviesSearched(list)
+        if (!searchQuery) {
+            const results = await discoverMovies({ selectedGenre, selectedYear, selectedVote, selectedContentType }, previousPage);
+            setMoviesSearched(results)
+        } else {
+            const list = await searchMoviesByName(searchQuery, previousPage);
+            setMoviesSearched(list)
+        }
         scrollRef.current?.scrollTo({ offset: 0, animated: true });
     }
 
@@ -123,32 +155,77 @@ const HomeScreen = ({ navigation }) => {
                 ) : null}
             </View>
 
-            <ScrollView ref={scrollRef}>
-                {searchQuery.length > 0 ? (
+            <Text style={styles.styleSubtitle}>Filtrar por:</Text>
 
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={styles.filtersContainer}
+            >
+                <FilterSelect
+                    options={genres}
+                    first={"Todos os gêneros"}
+                    selectedValue={selectedGenre}
+                    onValueChange={(val) => {
+                        setSelectedGenre(val);
+                    }}
+                />
+
+                <FilterSelect
+                    options={yearFilterList}
+                    first={"Todos os anos"}
+                    selectedValue={selectedYear}
+                    onValueChange={(val) => {
+                        setSelectedYear(val);
+                    }}
+                />
+
+                <FilterSelect
+                    options={contentFilterList}
+                    first={"Infantil e adulto"}
+                    selectedValue={selectedContentType}
+                    onValueChange={(val) => {
+                        setSelectedContentType(val);
+                    }}
+                />
+
+                <FilterSelect
+                    options={voteFilterList}
+                    first={"Todas as notas"}
+                    selectedValue={selectedVote}
+                    onValueChange={(val) => {
+                        setSelectedVote(val);
+                    }}
+                />
+            </ScrollView>
+
+            <ScrollView ref={scrollRef}>
+                {(searchQuery.length > 0 || selectedGenre || selectedContentType || selectedVote || selectedYear) ? (
                     <View style={styles.containerAssista}>
                         <Text style={styles.styleTitle}>{moviesSearched.total_results} resultados encontrados</Text>
-                        <FlatList
-                            data={moviesSearched.results}
-                            extraData={moviesSearched.results}
-                            keyExtractor={(item) => item.id.toString()}
-                            renderItem={({ item }) => (
-                                <TouchableOpacity style={styles.flex} onPress={() => navigation.navigate('MovieDetailsScreen', { movieId: item.id })}>
-                                    <View style={styles.movieCard}>
-                                        {item.placeholder ? null : (
+                        <View style={styles.searchedView}>
+                            {moviesSearched.results?.map((item, index) => {
+                                if (item.placeholder) {
+                                    return (
+                                        <View
+                                            key={`placeholder-${index}`}
+                                            style={styles.movieView}
+                                        />
+                                    );
+                                }
+
+                                return (
+                                    <TouchableOpacity key={item.id.toString()} onPress={() => navigation.navigate('MovieDetailsScreen', { movieId: item.id })} style={styles.movieView}>
+                                        <View style={styles.movieCard}>
                                             <Image
                                                 source={{ uri: `https://image.tmdb.org/t/p/w500${item.poster_path}` }}
                                                 style={styles.image}
                                             />
-                                        )}
-                                    </View>
-                                </TouchableOpacity>
-                            )}
-                            numColumns={3}
-                            columnWrapperStyle={styles.columnWrapper}
-                            contentContainerStyle={styles.listContent}
-                            showsVerticalScrollIndicator={false}
-                        />
+                                        </View>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
                         <View style={styles.paginationContainer}>
                             <Text style={styles.stylePagination}>
                                 Página {moviesSearched.page} de {moviesSearched.total_pages}
@@ -167,7 +244,6 @@ const HomeScreen = ({ navigation }) => {
                             </View>
                         </View>
                     </View>
-
                 ) : (
                     <ScrollView style={styles.flex} contentContainerStyle={styles.padding20}>
                         {Object.keys(groupedMovies).map((genre) => renderGenre(genre, groupedMovies[genre]))}

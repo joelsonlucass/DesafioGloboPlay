@@ -32,6 +32,15 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         fontFamily: "roboto light"
     },
+
+    styleSubtitle: {
+        paddingLeft: 20,
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#fff',
+        fontFamily: "roboto light"
+    },
+
     stylePagination: {
         fontSize: 12,
         color: '#fff',
@@ -116,7 +125,19 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontFamily: "roboto light",
         letterSpacing: 4
-    }
+    },
+    movieView: {
+        width: '33.33%',
+        padding: 2,
+    },
+    searchedView: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    filtersContainer: {
+        alignItems: 'center',
+        padding: 4,
+      },
 });
 
 export default styles;

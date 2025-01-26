@@ -47,9 +47,9 @@ const Navigation = () => {
                         let iconColor;
 
                         if (route.name === 'Início') {
-                            iconSource = require('../../assets/icons/home/home.svg');
+                            iconSource = require('../../assets/icons/home/drawable-xxxhdpi/baseline_home_black_48.png');
                         } else if (route.name === 'Minha lista') {
-                            iconSource = require('../../assets/icons/star/baseline-star_rate-18px.svg');
+                            iconSource = require('../../assets/icons/star/drawable-xxxhdpi/baseline_star_rate_black_48.png');
                         }
 
                         iconColor = focused ? '#fff' : '#808080';
